@@ -28,9 +28,6 @@ Parameters:
   PrivateSubnet2:
     Type: String
     Description: Define the Subnet 2 ID
-  ControlPlaneSecurityGroupID:
-    Type: String
-    Description: Define SG EKS CP
   AdminControlPlaneRole:
     Type: String
     Description: K8s Api Access permission
