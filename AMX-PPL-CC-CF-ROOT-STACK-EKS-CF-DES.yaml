@@ -57,3 +57,4 @@ Resources:
         PrivateSubnet2: !Ref PrivateSubnet2
         FargateProfileIamRole: !GetAtt IamStack.Outputs.FargateExecutionRoleArn
         FargateAppNamespace: !Ref FargateAppNamespace
+        
