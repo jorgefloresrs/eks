@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS CloudFormation template Root Stack'
 Parameters:
-  StackEnvironment:
+  AWSEnvironment:
     Type: String
     Description: AWS Environment
   AppPrefix:
@@ -36,17 +36,17 @@ Resources:
   IamStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-IAM-NESTED-STACK-CF-${StackEnvironment}.yaml"
+      TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-IAM-NESTED-STACK-CF-${AWSEnvironment}.yaml"
       Parameters:
-        StackEnvironment: !Ref StackEnvironment
+        AWSEnvironment: !Ref AWSEnvironment
         AppPrefix: !Ref AppPrefix
   
   EKSStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-EKS-NESTED-STACK-CF-${StackEnvironment}.yaml"
+      TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-EKS-NESTED-STACK-CF-${AWSEnvironment}.yaml"
       Parameters:
-        StackEnvironment: !Ref StackEnvironment
+        AWSEnvironment: !Ref AWSEnvironment
         EKSClusterName: !Ref EKSClusterName
         EksCMK : !Ref EksCMK
         ControlPlaneIAMRole: !GetAtt IamStack.Outputs.ControlPlaneRoleArn
@@ -57,4 +57,3 @@ Resources:
         PrivateSubnet2: !Ref PrivateSubnet2
         FargateProfileIamRole: !GetAtt IamStack.Outputs.FargateExecutionRoleArn
         FargateAppNamespace: !Ref FargateAppNamespace
-        
