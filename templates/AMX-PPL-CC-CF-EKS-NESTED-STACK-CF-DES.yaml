@@ -109,7 +109,7 @@ Resources:
           - !Ref PrivateSubnet2
       EndpointPrivateAccess: true
       EndpointPublicAccess: false
-      Logging: ClusterLogging
+      Logging:
         ClusterLogging:
           EnabledTypes:
             - Type: api
