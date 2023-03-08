@@ -43,19 +43,17 @@ Resources:
   
   EKSStack:
     Type: 'AWS::CloudFormation::Stack'
-    DependsOn:
-      - IamStack
     Properties:
       TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-EKS-NESTED-STACK-CF-${StackEnvironment}.yaml"
       Parameters:
         StackEnvironment: !Ref StackEnvironment
         EKSClusterName: !Ref EKSClusterName
         EksCMK : !Ref EksCMK
-        ControlPlaneIAMRole: !GetAtt IamStack.Outputs.ppl-cc-iam-role-eks
+        ControlPlaneIAMRole: !GetAtt IamStack.Outputs.ControlPlaneRoleArn
         EksVpcId: !Ref EksVpcId
         VPCCIDR: !Ref VPCCIDR
         ControlPlaneCIDR: !Ref ControlPlaneCIDR
         PrivateSubnet1: !Ref PrivateSubnet1
         PrivateSubnet2: !Ref PrivateSubnet2
-        FargateProfileIamRole: !GetAtt IamStack.Outputs.ppl-cc-iam-role-fargate
+        FargateProfileIamRole: !GetAtt IamStack.Outputs.FargateExecutionRoleArn
         FargateAppNamespace: !Ref FargateAppNamespace
