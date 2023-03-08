@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template Root Stack'
+Parameters:
+  StackEnvironment:
+    Type: String
+    Description: AWS Environment
+  AppPrefix:
+    Type: String
+    Description: APP Name
+  EKSClusterName:
+    Type: String
+    Description: Name of EKS
+  EksCMK:
+    Type: String
+    Description: ARN EKS CMK
+  EksVpcId:
+    Type: String
+    Description: Name of EKS
+  VPCCIDR:
+    Type: String
+    Description: CIDR of VPC
+  ControlPlaneCIDR:
+    Type: String
+    Description: CIDR for Control Plane
+  PrivateSubnet1:
+    Type: String
+    Description: Define the Subnet 1 ID
+  PrivateSubnet2:
+    Type: String
+    Description: Define the Subnet 2 ID
+  ControlPlaneSecurityGroupID:
+    Type: String
+    Description: Define SG EKS CP
+  FargateAppNamespace:
+    Type: String
+    Description: Namespace of App
+  
+Resources:        
+  IamStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-IAM-NESTED-STACK-CF-${StackEnvironment}.yaml"
+      Parameters:
+        StackEnvironment: !Ref StackEnvironment
+        AppPrefix: !Ref AppPrefix
+  
+  EKSStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-EKS-NESTED-STACK-CF-${StackEnvironment}.yaml"
+      Parameters:
+        StackEnvironment: !Ref StackEnvironment
+        EKSClusterName: !Ref EKSClusterName
+        EksCMK : !Ref EksCMK
+        ControlPlaneIAMRole: !GetAtt IamStack.Outputs.ppl-cc-iam-role-eks
+        EksVpcId: !Ref EksVpcId
+        VPCCIDR: !Ref VPCCIDR
+        ControlPlaneCIDR: !Ref ControlPlaneCIDR
+        PrivateSubnet1: !Ref PrivateSubnet1
+        PrivateSubnet2: !Ref PrivateSubnet2
+        ControlPlaneSecurityGroupID: !Ref ControlPlaneSecurityGroupID
+        FargateProfileIamRole: !GetAtt IamStack.Outputs.ppl-cc-iam-role-fargate
+        FargateAppNamespace: !Ref FargateAppNamespace

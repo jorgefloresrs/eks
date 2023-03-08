@@ -1,0 +1,15 @@
+{
+  "Parameters" : {
+    "AppPrefix" : "",
+    "EKSClusterName" : "",
+    "StackEnvironment" : "DES",
+    "EksCMK" : "",
+    "EksVpcId" : "",
+    "VPCCIDR" : "",
+    "ControlPlaneCIDR": "",
+    "PrivateSubnet1" : "",
+    "PrivateSubnet2" : "",
+    "ControlPlaneSecurityGroupID" : "",
+    "FargateAppNamespace" : ""
+  }
+}
