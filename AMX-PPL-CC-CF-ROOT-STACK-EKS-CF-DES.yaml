@@ -28,9 +28,6 @@ Parameters:
   PrivateSubnet2:
     Type: String
     Description: Define the Subnet 2 ID
-  ControlPlaneSecurityGroupID:
-    Type: String
-    Description: Define SG EKS CP
   FargateAppNamespace:
     Type: String
     Description: Namespace of App
@@ -46,6 +43,8 @@ Resources:
   
   EKSStack:
     Type: 'AWS::CloudFormation::Stack'
+    DependsOn:
+      - IamStack
     Properties:
       TemplateURL: !Sub "https://amx-ppl-cc-des-s3-configure-eks-stack.s3.amazonaws.com/AMX-PPL-CC-CF-EKS-NESTED-STACK-CF-${StackEnvironment}.yaml"
       Parameters:
@@ -58,6 +57,5 @@ Resources:
         ControlPlaneCIDR: !Ref ControlPlaneCIDR
         PrivateSubnet1: !Ref PrivateSubnet1
         PrivateSubnet2: !Ref PrivateSubnet2
-        ControlPlaneSecurityGroupID: !Ref ControlPlaneSecurityGroupID
         FargateProfileIamRole: !GetAtt IamStack.Outputs.ppl-cc-iam-role-fargate
         FargateAppNamespace: !Ref FargateAppNamespace
