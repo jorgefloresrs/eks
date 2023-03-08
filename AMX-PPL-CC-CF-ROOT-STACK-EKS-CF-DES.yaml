@@ -49,11 +49,13 @@ Resources:
         AWSEnvironment: !Ref AWSEnvironment
         EKSClusterName: !Ref EKSClusterName
         EksCMK : !Ref EksCMK
-        ControlPlaneIAMRole: !GetAtt IamStack.Outputs.ControlPlaneRoleArn
+        ControlPlaneIAMRole: 
+          Fn::ImportValue: ppl-cc-iam-role-eks
         EksVpcId: !Ref EksVpcId
         VPCCIDR: !Ref VPCCIDR
         ControlPlaneCIDR: !Ref ControlPlaneCIDR
         PrivateSubnet1: !Ref PrivateSubnet1
         PrivateSubnet2: !Ref PrivateSubnet2
-        FargateProfileIamRole: !GetAtt IamStack.Outputs.FargateExecutionRoleArn
+        FargateProfileIamRole:
+          Fn::ImportValue: ppl-cc-iam-role-Fargate
         FargateAppNamespace: !Ref FargateAppNamespace
