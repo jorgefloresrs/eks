@@ -28,9 +28,6 @@ Parameters:
   PrivateSubnet2:
     Type: String
     Description: Define the Subnet 2 ID
-  AdminControlPlaneRole:
-    Type: String
-    Description: K8s Api Access permission
   FargateProfileIamRole:
     Type: String
     Description: Fargate IAM Role
@@ -97,7 +94,7 @@ Resources:
     Properties:
       Name: !Ref EKSClusterName
       Version: '1.24'
-      RoleArn: !GetAtt ControlPlaneIAMRole.Arn
+      RoleArn: !Ref ControlPlaneIAMRole
       EncryptionConfig: !Ref EksCMK
       KubernetesNetworkConfig:
         ServiceIpv4Cidr: !Ref ControlPlaneCIDR 
@@ -107,9 +104,9 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
-      EndpointPrivateAccess: true
-      EndpointPublicAccess: false
-      Logging: ClusterLogging
+        EndpointPrivateAccess: true
+        EndpointPublicAccess: false
+      Logging:
         ClusterLogging:
           EnabledTypes:
             - Type: api
