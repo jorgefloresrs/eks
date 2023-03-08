@@ -1,0 +1,198 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template EKS Nested Stack'
+Parameters:
+  StackEnvironment:
+    Type: String
+    Description: AWS Environment
+  EKSClusterName:
+    Type: String
+    Description: Name of EKS
+  EksCMK:
+    Type: String
+    Description: ARN EKS CMK
+  ControlPlaneIAMRole:
+    Type: String
+    Description: EKS Control Plane IAM role
+  EksVpcId:
+    Type: String
+    Description: Name of EKS
+  VPCCIDR:
+    Type: String
+    Description: CIDR of VPC
+  ControlPlaneCIDR:
+    Type: String
+    Description: CIDR for Control Plane
+  PrivateSubnet1:
+    Type: String
+    Description: Define the Subnet 1 ID
+  PrivateSubnet2:
+    Type: String
+    Description: Define the Subnet 2 ID
+  ControlPlaneSecurityGroupID:
+    Type: String
+    Description: Define SG EKS CP
+  AdminControlPlaneRole:
+    Type: String
+    Description: K8s Api Access permission
+  FargateProfileIamRole:
+    Type: String
+    Description: Fargate IAM Role
+  FargateAppNamespace:
+    Type: String
+    Description: Namespace of App
+
+Resources:
+  ControlPlaneSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Control Plane
+      VpcId: !Ref EksVpcId
+      Tags:
+        - Key: Project
+          Value: PaperlessCC
+        - Key: Aplication-ID
+          Value: ATOS-N1-202209-Dynamics
+        - Key: Application-Role
+          Value: Web
+        - Key: CF-Version
+          Value: "1"
+        - Key: Owner
+          Value: "Oswaldo Javier Contreras R"
+        - Key: Cost-Center
+          Value: "120101"
+        - Key: Customer
+          Value: External
+        - Key: Confidentiality
+          Value: Medium
+        - Key: Compliance
+          Value: PCI
+        - Key: Environment
+          Value: !Ref AWSEnvironment
+        - Key: Account-ID
+          Value: !Sub "${AWS::AccountId}"
+        - Key: Area
+          Value: ATOS
+  
+  ControlPlaneSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn:
+      - ControlPlaneSecurityGroup
+    Properties:
+      GroupId: !Ref ControlPlaneSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: !Ref VPCCIDR
+
+  ControlPlaneSecurityEgressGroup:
+    Type: AWS::EC2::SecurityGroupEgress
+    DependsOn:
+      - ControlPlaneSecurityGroup
+    Properties:
+      GroupId: !Ref ControlPlaneSecurityGroup
+      CidrIp: !Ref VPCCIDR
+      FromPort: 10250
+      ToPort: 65535
+      IpProtocol: tcp
+
+  ControlPlane:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref EKSClusterName
+      Version: '1.24'
+      RoleArn: !GetAtt ControlPlaneIAMRole.Arn
+      EncryptionConfig: !Ref EksCMK
+      KubernetesNetworkConfig:
+        ServiceIpv4Cidr: !Ref ControlPlaneCIDR 
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+          - !Ref ControlPlaneSecurityGroup
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+      EndpointPrivateAccess: true
+      EndpointPublicAccess: false
+      Logging: ClusterLogging
+        ClusterLogging:
+          EnabledTypes:
+            - Type: api
+            - Type: audit
+            - Type: authenticator
+            - Type: controllerManager
+            - Type: scheduler
+      Tags:
+        - Key: Project
+          Value: PaperlessCC
+        - Key: Aplication-ID
+          Value: ATOS-N1-202209-Dynamics
+        - Key: Application-Role
+          Value: Web
+        - Key: CF-Version
+          Value: "1"
+        - Key: Owner
+          Value: "Oswaldo Javier Contreras R"
+        - Key: Cost-Center
+          Value: "120101"
+        - Key: Customer
+          Value: External
+        - Key: Confidentiality
+          Value: Medium
+        - Key: Compliance
+          Value: PCI
+        - Key: Environment
+          Value: !Ref AWSEnvironment
+        - Key: Account-ID
+          Value: !Sub "${AWS::AccountId}"
+        - Key: Area
+          Value: ATOS
+
+  EKSFargateProfile:
+    DependsOn: 
+      - ControlPlane
+    Type: AWS::EKS::FargateProfile
+    Properties:
+      FargateProfileName: !Ref EKSFargateProfile
+      ClusterName: !GetAtt ControlPlane.Name
+      PodExecutionRoleArn: !Ref FargateProfileIamRole
+      Subnets:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Selectors:
+        - Namespace: !Ref FargateAppNamespace
+        - Namespace: kube-system
+
+  ControlPlaneLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/paperless/AMX-PPL-CC-${StackEnvironment}-CW-LOGGROUP-CONTROLPLANE'
+      RetentionInDays: 90
+      Tags:
+        - Key: Project
+          Value: PaperlessCC
+        - Key: Aplication-ID
+          Value: ATOS-N1-202209-Dynamics
+        - Key: Application-Role
+          Value: Web
+        - Key: CF-Version
+          Value: "1"
+        - Key: Owner
+          Value: "Oswaldo Javier Contreras R"
+        - Key: Cost-Center
+          Value: "120101"
+        - Key: Customer
+          Value: External
+        - Key: Confidentiality
+          Value: Medium
+        - Key: Compliance
+          Value: PCI
+        - Key: Environment
+          Value: !Ref AWSEnvironment
+        - Key: Account-ID
+          Value: !Sub "${AWS::AccountId}"
+        - Key: Area
+          Value: ATOS
+
+Outputs:
+  ControlPlane:
+    Description: 'EKS Control Plane'
+    Value: !GetAtt ControlPlane.Name

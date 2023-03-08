@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template IAM Roles Nested Stack'
+Parameters:
+  StackEnvironment:
+    Type: String
+    Description: Sort of AWS AMX environment
+  AppPrefix:
+    Type: String
+    Description: APP Name
+
+Resources:
+  CloudWatchWriteAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Política que permite la escritura de logs desde el aplicativo alojado en eks
+      ManagedPolicyName: !Sub "${AppPrefix}-des-iam-p-cwtch-write"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:DescribeLogGroups'
+              - 'logs:DescribeLogStreams'
+              - 'logs:CreateLogGroup'
+            Resource:
+              - !Sub "arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*"
+          - Effect: Allow
+            Action:
+              - 'logs:PutLogEvents'
+            Resource:
+              - !Sub "arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*:log-stream:*"
+
+  S3ReadWriteAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Política que permite la lectura y escritura de archivos desde el aplicativo alojado en eks a buckets de s3
+      ManagedPolicyName: !Sub "${AppPrefix}-des-iam-p-s3-read-write"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:ReplicateObject'
+              - 's3:PutObject'
+              - 's3:GetObjectAcl'
+              - 's3:GetObject'
+              - 's3:ReplicateTags'
+              - 's3:PutObjectTagging'
+              - 's3:DeleteObject'
+            Resource:
+              - !Sub "arn:${AWS::Partition}:s3:::*/*"
+  
+  SMKMSReadAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Política que permite la lectura de secretos y uso de kms desde el aplicativo alojado en eks
+      ManagedPolicyName: !Sub "${AppPrefix}-des-iam-p-sm-kms-read"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'secretsmanager:GetResourcePolicy'
+              - 'secretsmanager:GetSecretValue'
+              - 'secretsmanager:DescribeSecret'
+              - 'secretsmanager:ListSecretVersionIds'
+              - 'secretsmanager:TagResource'
+              - 'kms:GetParametersForImport'
+              - 'kms:GetPublicKey'
+              - 'kms:Decrypt'
+              - 'kms:GetKeyRotationStatus'
+              - 'kms:GetKeyPolicy'
+              - 'kms:GenerateDataKey'
+              - 'kms:DescribeKey'
+            Resource:
+              - !Sub "arn:${AWS::Partition}:secretsmanager:*:${AWS::AccountId}:secret:*"
+              - !Sub "arn:${AWS::Partition}:kms:*:${AWS::AccountId}:key/*"
+
+  ControlPlaneRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - eks.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !GetAtt CloudWatchWriteAccess.Arn
+        - !GetAtt S3ReadWriteAccess.Arn
+        - !GetAtt SMKMSReadAccess.Arn
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+      Path: '/'
+      RoleName: !Sub 'AMX-PPL-CC-${StackEnvironment}-CP-PPL-ROLE'
+
+  FargateExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - eks-fargate-pods.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy
+      Path: '/'
+      RoleName: !Sub 'AMX-PPL-CC-${StackEnvironment}-FG-PPL-ROLE'
+
+Outputs:
+  ControlPlaneRoleArn:
+    Description: Returns ARN of Control Plane Role.
+    Value: !Ref ControlPlaneRole
+    Export:
+      Name: ppl-cc-iam-role-eks
+  FargateExecutionRoleArn:
+    Description: Returns ARN of Fargate Role.
+    Value: !Ref FargateExecutionRole
+    Export:
+      Name: ppl-cc-iam-role-Fargate
