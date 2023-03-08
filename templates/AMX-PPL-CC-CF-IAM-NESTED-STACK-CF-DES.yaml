@@ -89,7 +89,7 @@ Resources:
             - eks.amazonaws.com
           Action: sts:AssumeRole
       ManagedPolicyArns:
-        - !REf CloudWatchWriteAccess
+        - !Ref CloudWatchWriteAccess
         - !Ref S3ReadWriteAccess
         - !Ref SMKMSReadAccess
         - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
