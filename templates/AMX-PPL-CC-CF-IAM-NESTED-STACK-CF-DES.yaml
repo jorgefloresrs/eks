@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS CloudFormation template IAM Roles Nested Stack'
 Parameters:
-  StackEnvironment:
+  AWSEnvironment:
     Type: String
     Description: Sort of AWS AMX environment
   AppPrefix:
@@ -95,7 +95,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
         - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
       Path: '/'
-      RoleName: !Sub 'AMX-PPL-CC-${StackEnvironment}-CP-PPL-ROLE'
+      RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-CP-PPL-ROLE'
 
   FargateExecutionRole:
     Type: AWS::IAM::Role
@@ -111,7 +111,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy
       Path: '/'
-      RoleName: !Sub 'AMX-PPL-CC-${StackEnvironment}-FG-PPL-ROLE'
+      RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-FG-PPL-ROLE'
 
 Outputs:
   ControlPlaneRoleArn:
