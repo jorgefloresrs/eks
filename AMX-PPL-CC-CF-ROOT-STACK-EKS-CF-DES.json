@@ -2,7 +2,7 @@
   "Parameters" : {
     "AppPrefix" : "amx-ppl-des",
     "EKSClusterName" : "ppl-c-fargate",
-    "StackEnvironment" : "DES",
+    "AWSEnvironment" : "DES",
     "EksCMK" : "arn:aws:kms:us-east-1:766819176966:key/7a8027a7-3c28-49b2-9fc6-52821799beb9",
     "EksVpcId" : "vpc-0c9d013543a933d4a",
     "VPCCIDR" : "172.41.0.0/16",
