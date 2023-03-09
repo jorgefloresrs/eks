@@ -28,6 +28,9 @@ Parameters:
   PrivateSubnet2:
     Type: String
     Description: Define the Subnet 2 ID
+  EKSFargateProfileName:
+    Type: String
+    Description: Fargate Profile Name
   FargateProfileIamRole:
     Type: String
     Description: Fargate IAM Role
@@ -95,7 +98,12 @@ Resources:
       Name: !Ref EKSClusterName
       Version: '1.24'
       RoleArn: !Ref ControlPlaneIAMRole
-      EncryptionConfig: !Ref EksCMK
+      EncryptionConfig: 
+        - Provider:
+            KeyArn: 
+              !Ref EksCMK
+          Resources:
+          - secrets
       KubernetesNetworkConfig:
         ServiceIpv4Cidr: !Ref ControlPlaneCIDR 
       ResourcesVpcConfig:
@@ -145,8 +153,8 @@ Resources:
       - ControlPlane
     Type: AWS::EKS::FargateProfile
     Properties:
-      FargateProfileName: !Ref EKSFargateProfile
-      ClusterName: !GetAtt ControlPlane.Name
+      FargateProfileName: !Ref EKSFargateProfileName
+      ClusterName: !Ref ControlPlane
       PodExecutionRoleArn: !Ref FargateProfileIamRole
       Subnets:
         - !Ref PrivateSubnet1
@@ -189,4 +197,4 @@ Resources:
 Outputs:
   ControlPlane:
     Description: 'EKS Control Plane'
-    Value: !GetAtt ControlPlane.Name
+    Value: !Ref ControlPlane

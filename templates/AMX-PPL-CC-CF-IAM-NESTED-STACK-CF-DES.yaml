@@ -116,11 +116,11 @@ Resources:
 Outputs:
   ControlPlaneRoleArn:
     Description: Returns ARN of Control Plane Role.
-    Value: !Ref ControlPlaneRole
+    Value: !GetAtt ControlPlaneRole.Arn
     Export:
       Name: ppl-cc-iam-role-eks
   FargateExecutionRoleArn:
     Description: Returns ARN of Fargate Role.
-    Value: !Ref FargateExecutionRole
+    Value: !GetAtt FargateExecutionRole.Arn
     Export:
       Name: ppl-cc-iam-role-Fargate
