@@ -28,6 +28,9 @@ Parameters:
   PrivateSubnet2:
     Type: String
     Description: Define the Subnet 2 ID
+  EKSFargateProfileName:
+    Type: String
+    Description: Fargate Profile Name
   FargateAppNamespace:
     Type: String
     Description: Namespace of App
@@ -49,13 +52,12 @@ Resources:
         AWSEnvironment: !Ref AWSEnvironment
         EKSClusterName: !Ref EKSClusterName
         EksCMK : !Ref EksCMK
-        ControlPlaneIAMRole: 
-          Fn::ImportValue: ppl-cc-iam-role-eks
+        ControlPlaneIAMRole: !GetAtt IamStack.Outputs.ControlPlaneRoleArn
         EksVpcId: !Ref EksVpcId
         VPCCIDR: !Ref VPCCIDR
         ControlPlaneCIDR: !Ref ControlPlaneCIDR
         PrivateSubnet1: !Ref PrivateSubnet1
         PrivateSubnet2: !Ref PrivateSubnet2
-        FargateProfileIamRole:
-          Fn::ImportValue: ppl-cc-iam-role-Fargate
+        EKSFargateProfileName: !Ref EKSFargateProfileName
+        FargateProfileIamRole: !GetAtt IamStack.Outputs.FargateExecutionRoleArn
         FargateAppNamespace: !Ref FargateAppNamespace
