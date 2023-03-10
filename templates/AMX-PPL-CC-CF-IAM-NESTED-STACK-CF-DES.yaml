@@ -97,7 +97,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
       Path: '/'
       RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-CP-PPL-ROLE'
-       Policies:
+      Policies:
         - PolicyName: EkscontrolPlane
           PolicyDocument:
             Version: "2012-10-17"
