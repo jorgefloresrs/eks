@@ -97,6 +97,18 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
       Path: '/'
       RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-CP-PPL-ROLE'
+      Policies:
+        - PolicyName: CodePipelineAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ManageEncryption
+                Effect: Allow
+                Action:
+                  - kms:Decrypt
+                  - kms:Describe*
+                Resource:
+                  - !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*'
 
   FargateExecutionRole:
     Type: AWS::IAM::Role
