@@ -29,7 +29,7 @@ phases:
   build:
     commands:
       - |
-        ACCOUNT_ID=`aws sts get-caller-identity --query Account --output=text`
+        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
         eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS  --region $AMX_PPL_REGION  --approve
         eksctl create iamidentitymapping \
           --cluster $AMX_PPL_CLUSTER_EKS   \
@@ -160,4 +160,5 @@ phases:
           --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SCRT --approve --override-existing-serviceaccounts
   post_build:
     commands:
+      - aws eks --region $AMX_PPL_REGION  update-kubeconfig --name $AMX_PPL_CLUSTER_EKS
       - kubectl get pods -A -o wide
