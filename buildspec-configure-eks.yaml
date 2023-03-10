@@ -22,10 +22,14 @@ phases:
         mv -vf kubectl /usr/local/bin
         chmod +x /usr/local/bin/kubectl
         kubectl version --client --output=yaml
-        curl -L https://git.io/get_helm.sh | bash -s -- --version v3.8.2
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
         chmod 700 get_helm.sh
         ./get_helm.sh
         helm version --short
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip -u awscliv2.zip
+        ./aws/install --bin-dir /root/.pyenv/shims/ --install-dir /usr/local/aws-cli --update
+        aws --version
   build:
     commands:
       - |
@@ -38,7 +42,7 @@ phases:
           --username codebuild-eks \
           --no-duplicate-arns
 
-        aws eks --region $AMX_PPL_REGION  update-kubeconfig --name $AMX_PPL_CLUSTER_EKS 
+        aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION
 
         #########################################
         #                                       #
@@ -160,5 +164,5 @@ phases:
           --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SCRT --approve --override-existing-serviceaccounts
   post_build:
     commands:
-      - aws eks --region $AMX_PPL_REGION  update-kubeconfig --name $AMX_PPL_CLUSTER_EKS
+      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION
       - kubectl get pods -A -o wide
