@@ -51,8 +51,8 @@ phases:
       - RegionName=$AMX_PPL_REGION 
       - FluentBitHttpPort='2020'
       - FluentBitReadFromHead='Off'
-      - [[ ${FluentBitReadFromHead} = 'On' ]] && FluentBitReadFromTail='Off'|| FluentBitReadFromTail='On'
-      - [[ -z ${FluentBitHttpPort} ]] && FluentBitHttpServer='Off' || FluentBitHttpServer='On'
+      - if [ ${FluentBitReadFromHead} = 'On' ]; then FluentBitReadFromTail='Off'; else FluentBitReadFromTail='On'; fi
+      - if [ -z ${FluentBitHttpPort} ]; then FluentBitHttpServer='Off'; else FluentBitHttpServer='On'; fi
       - kubectl create configmap fluent-bit-cluster-info --from-literal=cluster.name=${ClusterName} --from-literal=http.server=${FluentBitHttpServer} --from-literal=http.port=${FluentBitHttpPort} --from-literal=read.head=${FluentBitReadFromHead} --from-literal=read.tail=${FluentBitReadFromTail} --from-literal=logs.region=${RegionName} -n amazon-cloudwatch
       - curl -o fluent-bit-config.yaml https://github.com/madebybk/eksapp/blob/main/fluent-bit/fluent-bit-config.yaml
       - kubectl apply -f fluent-bit-config.yaml
