@@ -35,12 +35,7 @@ phases:
         export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
         EKS_KUBECTL_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/EksCodeBuildKubectlRole
         eksctl create iamidentitymapping --cluster $AMX_PPL_CLUSTER_EKS --arn ${EKS_KUBECTL_ROLE_ARN} --group system:masters --username codebuild-eksadmin
-
         aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
-        ROLE="    - rolearn: arn:aws:iam::${ACCOUNT_ID}:role/EksCodeBuildKubectlRole\n      username: eksAdmin\n      groups:\n        - system:masters"
-        kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"$ROLE\";next}1" > /tmp/aws-auth-patch.yml
-        kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
-        kubectl get configmap aws-auth -o yaml -n kube-system
   build:
     commands:
       - |
