@@ -40,7 +40,7 @@ phases:
         #export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
         #export AWS_EXPIRATION=$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')
 
-        aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn "${EKS_KUBECTL_ROLE_ARN}" --region $AMX_PPL_AWS_REGION
+        aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
         ROLE="    - rolearn: arn:aws:iam::${ACCOUNT_ID}:role/EksCodeBuildKubectlRole\n      username: eksAdmin\n      groups:\n        - system:masters"
         kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"$ROLE\";next}1" > /tmp/aws-auth-patch.yml
         kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
