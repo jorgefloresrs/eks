@@ -31,7 +31,7 @@ phases:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
       - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::766819176966:role/kubectl"
-      - CREDENTIALS=$(aws sts assume-role --role-arn arn:aws:iam::766819176966:role/AMX-PPL-CC-DES-IAM-CB-ROLE --role-session-name codebuild-kubectl)
+      - CREDENTIALS=$(aws sts assume-role --role-arn ${EKS_KUBECTL_ROLE_ARN}--role-session-name codebuild-kubectl)
       - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
       - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
       - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
