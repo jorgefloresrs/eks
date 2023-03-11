@@ -13,157 +13,61 @@ environment_variables:
 phases:
   install:
     commands:
-      - |
-        curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-        mv -vf /tmp/eksctl /usr/local/bin
-        chmod +x /usr/local/bin/eksctl
-        curl -LO https://dl.k8s.io/release/v1.23.16/bin/linux/amd64/kubectl
-        mv -vf kubectl /usr/local/bin
-        chmod +x /usr/local/bin/kubectl
-        kubectl version --client --output=yaml
-        curl --silent --location https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz  | tar xz -C /tmp
-        mv /tmp/linux-amd64/helm /usr/local/bin && chmod +x /usr/local/bin/helm
-        helm version --short
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip -u awscliv2.zip
-        ./aws/install --bin-dir /root/.pyenv/shims/ --install-dir /usr/local/aws-cli --update
-        aws --version
+      - curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+      - mv -vf /tmp/eksctl /usr/local/bin
+      - chmod +x /usr/local/bin/eksctl
+      - curl -LO https://dl.k8s.io/release/v1.23.16/bin/linux/amd64/kubectl
+      - mv -vf kubectl /usr/local/bin
+      - chmod +x /usr/local/bin/kubectl
+      - kubectl version --client --output=yaml
+      - curl --silent --location https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz  | tar xz -C /tmp
+      - mv /tmp/linux-amd64/helm /usr/local/bin && chmod +x /usr/local/bin/helm
+      - helm version --short
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip -u awscliv2.zip
+      - ./aws/install --bin-dir /root/.pyenv/shims/ --install-dir /usr/local/aws-cli --update
+      - aws --version
   pre_build:
     commands:
-      - |
-        ACCOUNT_ID="766819176966"
-        EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CC-DES-IAM-CB-ROLE"
-        eksctl create iamidentitymapping \
-          --cluster $AMX_PPL_CLUSTER_EKS   \
-          --region=$AMX_PPL_REGION  \
-          --arn ${EKS_KUBECTL_ROLE_ARN}  \
-          --username codebuild-eks \
-          --no-duplicate-arns
-        eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve
+      - export ACCOUNT_ID="766819176966"
+      - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CC-DES-IAM-CB-ROLE"
+      - eksctl create iamidentitymapping --cluster $AMX_PPL_CLUSTER_EKS --region=$AMX_PPL_REGION --arn ${EKS_KUBECTL_ROLE_ARN} --username codebuild-eks --no-duplicate-arns
+      - eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve
   build:
     commands:
-      - |
-        aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
-        
-        #########################################
-        #                                       #
-        #  ADD-ON: AWS LOAD BALANCER CONTROLLER #
-        #                                       #
-        #########################################
-
-        echo "[INFO] Installing pre-requisites ALB Controller"
-        helm repo add eks https://aws.github.io/eks-charts
-        helm repo update
-        kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
-        curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
-        aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
-        rm -f iam_policy.json
-        eksctl create iamserviceaccount --cluster $AMX_PPL_CLUSTER_EKS  \
-          --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
-          --override-existing-serviceaccounts --approve --region $AMX_PPL_REGION 
-        echo "[INFO] Installing ALB Controller"
-        helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$AMX_PPL_CLUSTER_EKS  \
-          --set region=$AMX_PPL_REGION --set vpcId=$AMX_PPL_CLUSTER_VPC --set serviceAccount.create=false \ 
-          --set serviceAccount.name=aws-load-balancer-controller --set image.repository=AMX_PPL_ECR_REPO/amazon/aws-load-balancer-controller
-
-        #########################################
-        #                                       #
-        #  ADD-ON: FLUENT BIT                   #
-        #                                       #
-        #########################################
-
-        ClusterName=$AMX_PPL_CLUSTER_EKS 
-        RegionName=$AMX_PPL_REGION 
-        FluentBitHttpPort='2020'
-        FluentBitReadFromHead='Off'
-        [[ ${FluentBitReadFromHead} = 'On' ]] && FluentBitReadFromTail='Off'|| FluentBitReadFromTail='On'
-        [[ -z ${FluentBitHttpPort} ]] && FluentBitHttpServer='Off' || FluentBitHttpServer='On'
-        kubectl create configmap fluent-bit-cluster-info \
-          --from-literal=cluster.name=${ClusterName} \
-          --from-literal=http.server=${FluentBitHttpServer} \
-          --from-literal=http.port=${FluentBitHttpPort} \
-          --from-literal=read.head=${FluentBitReadFromHead} \
-          --from-literal=read.tail=${FluentBitReadFromTail} \
-          --from-literal=logs.region=${RegionName} -n amazon-cloudwatch
-        curl -o fluent-bit-config.yaml https://github.com/madebybk/eksapp/blob/main/fluent-bit/fluent-bit-config.yaml
-        kubectl apply -f fluent-bit-config.yaml
-        rm -rf fluent-bit-config.yaml
-        curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
-        aws iam create-policy --policy-name eks-fargate-logging-policy --policy-document file://permissions.json
-        aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
-        curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml | sed 's/{{cluster_name}}/'${ClusterName}'/;s/{{region_name}}/'${RegionName}'/;s/{{http_server_toggle}}/"'${FluentBitHttpServer}'"/;s/{{http_server_port}}/"'${FluentBitHttpPort}'"/;s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/;s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -     
-
-        #########################################
-        #                                       #
-        #  ADD-ON: ADOT                         #
-        #                                       #
-        #########################################
-                        
-        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
-        kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
-        aws eks create-addon --addon-name adot --addon-version v0.45.0-eksbuild.1 --cluster-name $AMX_PPL_CLUSTER_EKS
-        eksctl create iamserviceaccount \
-        --cluster {{ EKS_CLUSTER_NAME }} \
-        --region $AMX_PPL_REGION  \
-        --namespace fargate-container-insights \
-        --name adot-collector \
-        --role-name EKS-Fargate-ADOT-ServiceAccount-Role \
-        --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy \
-        --approve
-
-        #########################################
-        #                                       #
-        #  ADD-ON: CW LOGS                      #
-        #                                       #
-        #########################################
-
-        cat << EOF | kubectl apply -f -
-        kind: Namespace
-        apiVersion: v1
-        metadata:
-          name: aws-observability
-          labels:
-            aws-observability: enabled
-        EOF
-
-        cat << EOF | kubectl apply -f -
-        kind: ConfigMap
-        apiVersion: v1
-        metadata:
-          name: aws-logging
-          namespace: aws-observability
-        data:
-          output.conf: |
-            [OUTPUT]
-                Name cloudwatch_logs
-                Match   *
-                region us-east-1
-                log_group_name ${LOGGROUPNAME}
-                log_stream_prefix ${LOGGROUPPREFIX}
-                auto_create_group true
-                log_key log
-
-          parsers.conf: |
-            [PARSER]
-                Name crio
-                Format Regex
-                Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>P|F) (?<log>.*)$
-                Time_Key    time
-                Time_Format %Y-%m-%dT%H:%M:%S.%L%z
-          
-              filters.conf: |
-                [FILTER]
-                    Name parser
-                    Match *
-                    Key_name log
-                    Parser crio
-        EOF
-
-        eksctl create iamserviceaccount --name $AMX_PPL_NAMESPACE --namespace $AMX_PPL_NAMESPACE --cluster $AMX_PPL_CLUSTER_EKS  
-          --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-MAR \
-          --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SAC \
-          --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SCRT --approve --override-existing-serviceaccounts
+      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
+      - echo "[INFO] Installing pre-requisites ALB Controller"
+      - helm repo add eks https://aws.github.io/eks-charts
+      - helm repo update
+      - kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+      - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
+      - aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+      - rm -f iam_policy.json
+      - eksctl create iamserviceaccount --cluster $AMX_PPL_CLUSTER_EKS --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy --override-existing-serviceaccounts --approve --region $AMX_PPL_REGION 
+      - echo "[INFO] Installing ALB Controller"
+      - helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$AMX_PPL_CLUSTER_EKS --set region=$AMX_PPL_REGION --set vpcId=$AMX_PPL_CLUSTER_VPC --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set image.repository=AMX_PPL_ECR_REPO/amazon/aws-load-balancer-controller
+      - echo "[INFO] Installing Fluent Bit"
+      - ClusterName=$AMX_PPL_CLUSTER_EKS 
+      - RegionName=$AMX_PPL_REGION 
+      - FluentBitHttpPort='2020'
+      - FluentBitReadFromHead='Off'
+      - [[ ${FluentBitReadFromHead} = 'On' ]] && FluentBitReadFromTail='Off'|| FluentBitReadFromTail='On'
+      - [[ -z ${FluentBitHttpPort} ]] && FluentBitHttpServer='Off' || FluentBitHttpServer='On'
+      - kubectl create configmap fluent-bit-cluster-info --from-literal=cluster.name=${ClusterName} --from-literal=http.server=${FluentBitHttpServer} --from-literal=http.port=${FluentBitHttpPort} --from-literal=read.head=${FluentBitReadFromHead} --from-literal=read.tail=${FluentBitReadFromTail} --from-literal=logs.region=${RegionName} -n amazon-cloudwatch
+      - curl -o fluent-bit-config.yaml https://github.com/madebybk/eksapp/blob/main/fluent-bit/fluent-bit-config.yaml
+      - kubectl apply -f fluent-bit-config.yaml
+      - rm -rf fluent-bit-config.yaml
+      - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
+      - aws iam create-policy --policy-name eks-fargate-logging-policy --policy-document file://permissions.json
+      - aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
+      - curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml | sed 's/{{cluster_name}}/'${ClusterName}'/;s/{{region_name}}/'${RegionName}'/;s/{{http_server_toggle}}/"'${FluentBitHttpServer}'"/;s/{{http_server_port}}/"'${FluentBitHttpPort}'"/;s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/;s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -     
+      - echo "[INFO] Installing OTEL"
+      - kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
+      - kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
+      - aws eks create-addon --addon-name adot --addon-version v0.45.0-eksbuild.1 --cluster-name $AMX_PPL_CLUSTER_EKS
+      - eksctl create iamserviceaccount --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --namespace fargate-container-insights --name adot-collector --role-name EKS-Fargate-ADOT-ServiceAccount-Role --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --approve
+      - eksctl create iamserviceaccount --name $AMX_PPL_NAMESPACE --namespace $AMX_PPL_NAMESPACE --cluster $AMX_PPL_CLUSTER_EKS --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-MAR --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SAC --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SCRT --approve --override-existing-serviceaccounts
   post_build:
     commands:
-      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION
+      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
       - kubectl get pods -A -o wide
