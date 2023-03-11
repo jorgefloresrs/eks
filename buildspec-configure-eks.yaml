@@ -31,7 +31,6 @@ phases:
   pre_build:
     commands:
       - |
-        #export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
         export ACCOUNT_ID="766819176966"
         EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CC-DES-IAM-CB-ROLE"
         eksctl create iamidentitymapping \
