@@ -1,8 +1,7 @@
 version: 0.2
 
-run-as: root
-env:
-  variables:
+environment_variables:
+  plaintext:
     AMX_PPL_AWS_REGION: "us-east-1"
     AMX_PPL_ENV: "DES"
     AMX_PPL_CLUSTER_EKS: "ppl-c-fargate"
@@ -34,19 +33,18 @@ phases:
       - |
         export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
         EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CC-DES-IAM-CB-ROLE"
-        eksctl create iamidentitymapping --cluster $AMX_PPL_CLUSTER_EKS --arn ${EKS_KUBECTL_ROLE_ARN} --group system:masters --username codebuild-eksadmin
-        aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
-  build:
-    commands:
-      - |
-        eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS  --region $AMX_PPL_REGION  --approve
         eksctl create iamidentitymapping \
           --cluster $AMX_PPL_CLUSTER_EKS   \
           --region=$AMX_PPL_REGION  \
-          --arn arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CB-EKS-${ACCOUNT_ID}-$AMX_PPL_REGION  \
+          --arn ${EKS_KUBECTL_ROLE_ARN}  \
           --username codebuild-eks \
           --no-duplicate-arns
-
+        eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve
+  build:
+    commands:
+      - |
+        aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
+        
         #########################################
         #                                       #
         #  ADD-ON: AWS LOAD BALANCER CONTROLLER #
