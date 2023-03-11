@@ -126,6 +126,30 @@ Resources:
       Path: '/'
       RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-FG-PPL-ROLE'
 
+  EksCodeBuildKubectlRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: 
+              - !Sub "arn:aws:iam::${AWS::AccountId}:root"
+          Action: sts:AssumeRole
+      Path: '/'
+      RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-EKS-CB-KUBECTL-ROLE'
+      Policies:
+        - PolicyName: EksCodeBuildKubectlPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: KubectlActions
+                Effect: Allow
+                Action:
+                  - eks:Describe*
+                Resource: '*'
+
 Outputs:
   ControlPlaneRoleArn:
     Description: Returns ARN of Control Plane Role.
