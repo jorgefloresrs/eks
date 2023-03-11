@@ -22,18 +22,20 @@ phases:
         mv -vf kubectl /usr/local/bin
         chmod +x /usr/local/bin/kubectl
         kubectl version --client --output=yaml
-        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-        chmod 700 get_helm.sh
-        ./get_helm.sh
+        curl --silent --location https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz  | tar xz -C /tmp
+        mv /tmp/linux-amd64/helm /usr/local/bin && chmod +x /usr/local/bin/helm
         helm version --short
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip -u awscliv2.zip
         ./aws/install --bin-dir /root/.pyenv/shims/ --install-dir /usr/local/aws-cli --update
         aws --version
+  pre_build:
+    commands:
+      - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
+      - env
   build:
     commands:
       - |
-        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
         eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS  --region $AMX_PPL_REGION  --approve
         eksctl create iamidentitymapping \
           --cluster $AMX_PPL_CLUSTER_EKS   \
