@@ -30,8 +30,8 @@ phases:
   build:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
-      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
       - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CC-DES-IAM-CB-ROLE"
+      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
       - eksctl create iamidentitymapping --cluster $AMX_PPL_CLUSTER_EKS --region=$AMX_PPL_REGION --arn ${EKS_KUBECTL_ROLE_ARN} --username codebuild-eks --no-duplicate-arns
       - eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve
       - echo "[INFO] Installing pre-requisites ALB Controller"
