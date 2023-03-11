@@ -134,8 +134,7 @@ Resources:
         Statement:
         - Effect: Allow
           Principal:
-            AWS:
-            - arn:aws:iam::${AWS::AccountId}:root
+            AWS: '*'
           Action: sts:AssumeRole
       Path: '/'
       RoleName: !Sub 'AMX-PPL-CC-${AWSEnvironment}-EKS-CB-KUBECTL-ROLE'
