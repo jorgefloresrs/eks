@@ -38,7 +38,7 @@ phases:
       - helm repo update
       - kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
       - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
-      - aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+      - aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy-amx --policy-document file://iam_policy.json
       - rm -f iam_policy.json
       - eksctl create iamserviceaccount --cluster $AMX_PPL_CLUSTER_EKS --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy --override-existing-serviceaccounts --approve --region $AMX_PPL_REGION 
       - echo "[INFO] Installing ALB Controller"
