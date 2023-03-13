@@ -29,7 +29,7 @@ phases:
       - aws --version
   pre_build:
     commands:
-      - eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve 
+      - eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --approve 
   build:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
