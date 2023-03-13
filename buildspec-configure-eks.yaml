@@ -27,18 +27,15 @@ phases:
       - unzip -u awscliv2.zip
       - ./aws/install --bin-dir /root/.pyenv/shims/ --install-dir /usr/local/aws-cli --update
       - aws --version
+  pre_build:
+    commands:
+      - eksctl create iamidentitymapping --cluster $AMX_PPL_CLUSTER_EKS --region=$AMX_PPL_REGION --arn ${EKS_KUBECTL_ROLE_ARN} --username codebuild-eks
+      - eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve 
   build:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
       - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::766819176966:role/kubectl"
-      - CREDENTIALS=$(aws sts assume-role --role-arn ${EKS_KUBECTL_ROLE_ARN} --role-session-name codebuild-kubectl)
-      - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
-      - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
-      - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
-      - export AWS_EXPIRATION=$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')
       - env
-      - eksctl create iamidentitymapping --cluster $AMX_PPL_CLUSTER_EKS --region=$AMX_PPL_REGION --arn ${EKS_KUBECTL_ROLE_ARN} --username codebuild-eks
-      - eksctl utils associate-iam-oidc-provider --cluster $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --approve
       - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
       - echo "[INFO] Installing pre-requisites ALB Controller"
       - helm repo add eks https://aws.github.io/eks-charts
