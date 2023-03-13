@@ -66,5 +66,5 @@ phases:
       - eksctl create iamserviceaccount --name $AMX_PPL_NAMESPACE --namespace $AMX_PPL_NAMESPACE --cluster $AMX_PPL_CLUSTER_EKS --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-MAR --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SAC --attach-policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AMX-P-PPL-SCRT --approve --override-existing-serviceaccounts
   post_build:
     commands:
-      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_AWS_REGION
+      - aws eks update-kubeconfig --name $AMX_PPL_CLUSTER_EKS --role-arn ${EKS_KUBECTL_ROLE_ARN} --region $AMX_PPL_REGION
       - kubectl get pods -A -o wide
