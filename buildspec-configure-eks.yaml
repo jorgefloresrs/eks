@@ -198,6 +198,6 @@ phases:
   post_build:
     commands:
       - kubectl get pods -A -o wide
-  artifacts:
-    files:
-      - manifests/**/*
+artifacts:
+  files:
+    - manifests/**/*
