@@ -153,7 +153,7 @@ phases:
                                     s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/
                                     s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -
       - |
-        if [ ! $(aws eks list-fargate-profiles --cluster-name $AMX_PPL_CLUSTER_EKS --output text | grep fargate-container-insights | awk '{print $2}') ]
+        if [ ! $(aws eks list-fargate-profiles --cluster-name $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --output text | grep fargate-container-insights | awk '{print $2}') ]
         then
           eksctl create fargateprofile             \
             --cluster ${clusterName}               \
@@ -163,7 +163,7 @@ phases:
         fi  
       ### Install Otel
       - |
-        if [ ! $(aws eks list-addons --cluster-name $AMX_PPL_CLUSTER_EKS --output text) ]
+        if [ ! $(aws eks list-addons --cluster-name $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --output text) ]
         then
           kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
           aws eks create-addon \
