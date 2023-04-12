@@ -1,3 +1,4 @@
+
 version: 0.2
 
 environment_variables:
@@ -57,6 +58,24 @@ phases:
         fi
   build:
     commands:
+     - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
+      - |
+        if [ ! $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy 2>/dev/null) ]
+        then
+          aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+        fi
+      - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
+      - |
+        if [ ! $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy 2>/dev/null) ]
+        then
+          aws iam create-policy \
+            --policy-name eks-fargate-logging-policy \
+            --policy-document file://permissions.json
+          aws iam attach-role-policy \
+            --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy \
+            --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
+        fi
+      - rm -f iam_policy.json permissions.json
       - CREDENTIALS=$(aws sts assume-role --role-arn ${EKS_KUBECTL_ROLE_ARN} --role-session-name codebuild-kubectl --duration-seconds 900)
       - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
       - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
@@ -66,13 +85,6 @@ phases:
       - helm repo add eks https://aws.github.io/eks-charts
       - helm repo update
       - kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
-      - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
-      - |
-        if [ ! $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy 2>/dev/null) ]
-        then
-          aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
-        fi
-      - rm -f iam_policy.json
       - |
         if [ ! $(kubectl get serviceaccounts -n kube-system aws-load-balancer-controller 2>/dev/null) ]
         then
@@ -132,18 +144,6 @@ phases:
           curl -o fluent-bit-config.yaml https://github.com/madebybk/eksapp/blob/main/fluent-bit/fluent-bit-config.yaml
           kubectl apply -f fluent-bit-config.yaml
           rm -rf fluent-bit-config.yaml
-        fi
-      - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
-      - |
-        if [ ! $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy 2>/dev/null) ]
-        then
-          aws iam create-policy \
-            --policy-name eks-fargate-logging-policy \
-            --policy-document file://permissions.json
-
-          aws iam attach-role-policy \
-            --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy \
-            --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
         fi
       - |
         curl ${FLUENTBITURL} | sed 's/{{cluster_name}}/'${ClusterName}'/            
