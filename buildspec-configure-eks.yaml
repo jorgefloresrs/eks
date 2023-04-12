@@ -59,6 +59,11 @@ phases:
         fi
   build:
     commands:
+      - |
+        aws eks update-kubeconfig            \
+          --name $AMX_PPL_CLUSTER_EKS        \
+          --role-arn ${EKS_KUBECTL_ROLE_ARN} \
+          --region $AMX_PPL_REGION
       ### Install AWS Load Controller
       - helm repo add eks https://aws.github.io/eks-charts
       - helm repo update
