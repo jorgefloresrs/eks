@@ -41,13 +41,13 @@ phases:
       - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
       - export AWS_EXPIRATION="$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')"
       - |
-        eksctl create iamidentitymapping \
-          --cluster $AMX_PPL_CLUSTER_EKS \
-          --region $AMX_PPL_REGION \
-          --arn ${EKS_KUBECTL_ROLE_ARN} \
-          --group system:masters \
-          --no-duplicate-arns \
-          --username codebuild-kubectl
+        aws eks update-kubeconfig            \
+          --name $AMX_PPL_CLUSTER_EKS        \
+          --region $AMX_PPL_REGION
+      - |
+        ROLE="    - groups:\n        - system:masters\n      rolearn: ${EKS_KUBECTL_ROLE_ARN}\n      username: codebuild-kubectl"
+        kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"${ROLE}\";next}1" > /tmp/aws-auth-patch.yml
+        kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
       - oidc_provider=$(aws eks describe-cluster --name $AMX_PPL_CLUSTER_EKS--region $AMX_PPL_REGION --query "cluster.identity.oidc.issuer" --output text | sed -e "s/^https:\/\///")
       - |
         if [ ! ${oidc_provider} ]
