@@ -146,7 +146,7 @@ phases:
 
           aws iam attach-role-policy \
             --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy \
-            --role-name AMX-PPL-CC-${AMX_PPL_ENV}-FG-PPL-ROLE
+            --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
         fi
       - |
         curl ${FLUENTBITURL} | sed 's/{{cluster_name}}/'${ClusterName}'/            
