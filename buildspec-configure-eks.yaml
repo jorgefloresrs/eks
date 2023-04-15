@@ -1,5 +1,4 @@
 
-
 version: 0.2
 
 environment_variables:
@@ -37,9 +36,9 @@ phases:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
       - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CB-EKS-KUBECTL-766819176966-us-east-1"
-      - export AWS_ACCESS_KEY_ID=ASIA3FCP4CIDC4TASO6R
-      - export AWS_SECRET_ACCESS_KEY=hXM8fysGYg8TQLdHcnN/8AZtl3Og0pivkVWmzXd0
-      - export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEBMaCXVzLWVhc3QtMSJHMEUCIQCOSNb9sPg9D+/87pGDsV3qp3AZzcr/VQj/RDg/3ONBxAIgIp2D3cl1qSgymvSllMR/94o9y3GVF3HPH+9f7PsI6PQqwAMI/P//////////ARADGgw3NjY4MTkxNzY5NjYiDAUlqTN6JqrMPEDO2SqUA5pMy3x+zLSqKLHARJKG8AQcZvlPX+3I+CZsmbPi3xU/w2Ekfc9Et/pWXdmgve4gsDx3ipqn6Ey01mlJvUicPBQOXhL+tsOyC2PGCIrctYM6mVdmwQ+DmLbaIowS9eEd5gUDnPdxj+BeQM16X2G0D4PKgY2IyzqFpzPiEIgHibcba2xwhf5pr/g+/MKMIiCfQZW3OzcYOepzytktdvFaIvpu3QQKewkZvgNssenFjhvSYsoa/9i6OcQaNi6ykmjAz7XmDF85KG39y7pMnmAsMHIRTPZIeqH3CDtuX6g2L7N0zfiC7hSrbOflZ/D9eDRT9oiUeksL9bfeIfXbSRROEPkWPi219zzpC1ZNjX5C8f+V31wuY4mXDur0f02m/TQWW0rW8ICVt3LKuEYWxJSqmB2fAkd6ucU069GQXhzyzmqHuirokEZbZA8Sy11McFbz4oQc6isK5ZizIg+HbVKJg3hAfplaSUoWsvGyfyR77QwHDWfqdb7VhJmkvVPd/thYPmhEJcbyJGI2VVEHn0wvdjFVJH0/MOGm6KEGOt0BVRzpqhIlkLtGdDluweB6HpaQ59nJJ8c2im/ZYOj5gSyRc9iwMGoD3WCKw21f8u3vfBIc1v87A+XaOV6hsZVOTYo0QHgSEGIgI8ZgXjoXRE7zn5/OBcd3xzBmb7djLZa5TDaiwmBi72PLVA3RBKiGpnRDV5MVHC8rrbWctdstKFpZkPeqCWJqXWY4RsPnScM6kAZTQrsTRc/vwGaMpFk3Bdbr8O7EDXmNU6DnLmVx0S/Hnkf2J7o1yz5AEeKJ3cCmTFzP5Ghptwmth3M/50SD4z9ujGwqM5vwjtHIPok=
+      - export AWS_ACCESS_KEY_ID=ASIA3FCP4CIDFCEHQ3XE
+      - export AWS_SECRET_ACCESS_KEY=aRlU1AH1eYZmOygz4onZbhBW+ZOlH55MybckR+MR
+      - export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEMr//////////wEaCXVzLWVhc3QtMSJIMEYCIQDbqWOI7rkkZZrsLM2Xg3nVpUNG64B7E8mzr+04dAbmowIhAPZcqLqBGFJJsnXIJJE2yyMV74GG8pkdtiSXRF8JYXnzKsADCLP//////////wEQAxoMNzY2ODE5MTc2OTY2IgwTBflZKapmh20u+60qlAOvs7GVSMq9XeeFomtj6G2Vrufa6ALW6fdbHxEFREIt3C4nsRV3N6t1dO0dlnwl/UrOM4F8yK/9wWmr3KOCKW6IiRYiIWKz950yqjg/BEoDtcmdVjWh1DJAkwqth97LIDksCEGizK8J8/XGRKnySSnKrAchdQ0lLy3uPQgB2rolzlHcX5WYZwpOshPQs/9/Wonh1R7dQcgx0EXyOlTErKWYlnH1ARXIZ5DG1ErcLTfpq5jI4orQLBKWKigokMS8BYRGc0N1k7xHlzoFi8nMxsMU/6wfcYbXZJCtrHxhaKUMwZIfq7/yAffxbAuEIuHnume7zQdTmOpOotHRrJROm1ehmpQIfH5h3+IminWge2Djmle8KwCgcK1PGnq4qF/EhETsuIhRVqjciUGjwKvLl79tALBC4b8t1xdeKf+9FobdvuNuk1zsiySpmLmiPEixNY6ETNXoa8E8y8ll6QxhZJg6X/6WqtOtxAQl87HF85ilDxkJFUpofgqwZ5SqDaETu8ANhIxEnXZCUvd0q/qyAixHaIZ25DDPnNihBjrcAUXGbGojvffuF1PRaqcKGuxjQzDHQngx9TcxgkguLo3c2pjRtiBIIzIjNOBSH76r/pH3gk9rT20Zi1UD5TszuUuABZz2kERdkd+dRJPNw8VoH2Pnp0CvRQb9p2MWYWoyh/8WItK42yDtIhYKMHiuBu/5jPecfyFIUFdnTPlg5OzZegqmqEelKrFur8/FNPMhTMzoiw4Kfa2yg9YlSnnzhf4Gx2vLbv8IXLLjArXZndiyTM3jnK5vsDU+KdmOQ9xfR0VLnkYvNEj4UMug5JdiradDJVEwpCyWfrvNnqU=
       - |
         aws eks update-kubeconfig            \
           --name $AMX_PPL_CLUSTER_EKS        \
@@ -59,24 +58,6 @@ phases:
         fi
   build:
     commands:
-      - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
-      - |
-        if [ ! $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy 2>/dev/null) ]
-        then
-          aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
-        fi
-      - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
-      - |
-        if [ ! $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy 2>/dev/null) ]
-        then
-          aws iam create-policy \
-            --policy-name eks-fargate-logging-policy \
-            --policy-document file://permissions.json
-          aws iam attach-role-policy \
-            --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy \
-            --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
-        fi
-      - rm -f iam_policy.json permissions.json
       - |
         aws eks update-kubeconfig            \
           --name $AMX_PPL_CLUSTER_EKS        \
@@ -86,8 +67,16 @@ phases:
       - helm repo add eks https://aws.github.io/eks-charts
       - helm repo update
       - kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+      - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
+      - AWSLoadBalancerPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy | awk '{print $2}')
       - |
-        if [ ! $(kubectl get serviceaccounts -n kube-system aws-load-balancer-controller 2>/dev/null) ]
+        if [ ! ${AWSLoadBalancerPolicy} ]
+        then
+          aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+        fi
+      - rm -f iam_policy.json
+      - |
+        if [ ! $(kubectl get serviceaccounts -n kube-system aws-load-balancer-controller | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then
           eksctl create iamserviceaccount \
             --cluster $AMX_PPL_CLUSTER_EKS \
@@ -98,7 +87,7 @@ phases:
             --region $AMX_PPL_REGION --approve
         fi
       - |
-        if [ $(kubectl get deployment -n kube-system aws-load-balancer-controller | grep -v "^NAME" | wc -l | awk '{print $1}') -eq 0 ]
+        if [ $(kubectl get deployment -n kube-system aws-load-balancer-controller | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then
           helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
             --set clusterName=$AMX_PPL_CLUSTER_EKS \
@@ -129,7 +118,7 @@ phases:
         fi
       - kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cloudwatch-namespace.yaml
       - |
-        if [ ! $(kubectl get configmap/fluent-bit-cluster-info -n amazon-cloudwatch | grep -v "^NAME" | wc -l | awk '{print $1}') ]
+        if [ ! $(kubectl get configmap/fluent-bit-cluster-info -n amazon-cloudwatch | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then
           kubectl create configmap fluent-bit-cluster-info \
             --from-literal=cluster.name=${ClusterName} \
@@ -140,11 +129,24 @@ phases:
             --from-literal=logs.region=${RegionName} -n amazon-cloudwatch
         fi
       - |
-        if [ ! $(kubectl get serviceaccounts -n amazon-cloudwatch fluent-bit 2>/dev/null) ]
+        if [ ! $(kubectl get serviceaccounts -n amazon-cloudwatch fluent-bit | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then 
           curl -o fluent-bit-config.yaml https://github.com/madebybk/eksapp/blob/main/fluent-bit/fluent-bit-config.yaml
           kubectl apply -f fluent-bit-config.yaml
           rm -rf fluent-bit-config.yaml
+        fi
+      - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
+      - FargateLoggingPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy | awk '{print $2}')
+      - |
+        if [ ! ${FargateLoggingPolicy} ]
+        then
+          aws iam create-policy \
+            --policy-name eks-fargate-logging-policy \
+            --policy-document file://permissions.json
+
+          aws iam attach-role-policy \
+            --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy \
+            --role-name AMX-PPL-CC-${AMX_PPL_ENV}-FG-PPL-ROLE
         fi
       - |
         curl ${FLUENTBITURL} | sed 's/{{cluster_name}}/'${ClusterName}'/            
@@ -154,7 +156,7 @@ phases:
                                     s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/
                                     s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -
       - |
-        if [ ! $(aws eks list-fargate-profiles --cluster-name $AMX_PPL_CLUSTER_EKS --output text | grep fargate-container-insights | awk '{print $2}') ]
+        if [ ! $(aws eks list-fargate-profiles --cluster-name ${AMX_PPL_CLUSTER_EKS} --output text | grep fargate-container-insights | awk '{print $2}') ]
         then
           eksctl create fargateprofile             \
             --cluster ${clusterName}               \
@@ -164,7 +166,7 @@ phases:
         fi  
       ### Install Otel
       - |
-        if [ ! $(aws eks list-addons --cluster-name $AMX_PPL_CLUSTER_EKS --output text) ]
+        if [ ! $(aws eks list-addons --cluster-name ${AMX_PPL_CLUSTER_EKS} --output text) ]
         then
           kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
           aws eks create-addon \
@@ -173,7 +175,7 @@ phases:
             --cluster-name $AMX_PPL_CLUSTER_EKS
         fi
       - |
-        if [ ! $(kubectl get serviceaccounts -n fargate-container-insights adot-collector 2>/dev/null) ]
+        if [ ! $(kubectl get serviceaccounts -n fargate-container-insights adot-collector | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then
           eksctl create iamserviceaccount \
             --cluster $AMX_PPL_CLUSTER_EKS \
@@ -185,7 +187,7 @@ phases:
             --approve
         fi
       - |
-        if [ ! $(kubectl get serviceaccounts -n $AMX_PPL_NAMESPACE $AMX_PPL_NAMESPACE 2>/dev/null) ]
+        if [ ! $(kubectl get serviceaccounts -n $AMX_PPL_NAMESPACE $AMX_PPL_NAMESPACE | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then 
           eksctl create iamserviceaccount \
             --name $AMX_PPL_NAMESPACE \
@@ -202,7 +204,7 @@ phases:
       - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/'$LOGGROUPPREFIX'/g' manifests/aws-logging-cloudwatch-configmap.yaml
       ### Installation HPA
       - |
-        if [ ! $(kubectl get serviceaccounts -n kube-system metrics-server 2>/dev/null) ]
+        if [ ! $(kubectl get serviceaccounts -n kube-system metrics-server | grep -v "^NAME" | awk '{print $1}' 2>/dev/null) ]
         then
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
         fi
