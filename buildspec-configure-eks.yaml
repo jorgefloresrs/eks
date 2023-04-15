@@ -1,3 +1,4 @@
+
 version: 0.2
 
 environment_variables:
@@ -35,9 +36,9 @@ phases:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
       - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CB-EKS-KUBECTL-766819176966-us-east-1"
-      - export AWS_ACCESS_KEY_ID=ASIA3FCP4CIDAHTGCJOM
-      - export AWS_SECRET_ACCESS_KEY=CtCIPSH74mddmfimT6YtGHNoTfxw/iATw6R+66Hx
-      - export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEBUaCXVzLWVhc3QtMSJIMEYCIQC46sGpiFxSj94M8PVuxfwbughPwMbAi4WAVu7LOpZmuQIhAL3vftAUPk5iCDABHYnANN9mRTSyaTg2I/N+H+cBeRz4KsADCP7//////////wEQAxoMNzY2ODE5MTc2OTY2Igy3D5jVdAZy2gq4W0wqlAOUiALUsHP2w+oh7c/93vK3io2kOAtuS46A0mw4aQncF46JSa/OAoYxKoKj0WBiJY6SjgcYwCg0xvxexoyDIYpG9UrWbdVQFWH5P9p7fuq7HqmzBHgGn5butVHHyM/3xLomMSvzGDH7RLyhiDnUG5wv4j9w7OdwyjYG0LupiSzICjhf/Vv6huX3bxJojyW1MBV4BWXaU87QW64HpKPDOsYDQradFqiMYDAlmjspktt8JTBkc1Xx3yi7mCWgvMmin+qECchW3YsG7V4Zkjs8zRzOvRD2RQDXHSI9bRV+PsOSvtTXRRY7Ax9WpV69cfpQhk3OlYKK4f1DlhBrNBmvu9sJ0KHvS7CN0QHaRiZuv3BNHhotNFHINlLu+3HTz6WNaMv9U4/1hP84bPec9B9jgb0eYb5WPVGIQlTD3fdHJvirP4vMUBRZo903TbMLi3Y3admGQZ0QLi77D7vLD084RKVZ755kuDbJONG9Y7f6JNGyPyD/2YuQ5gZhkjtqgnbRxizzzAesxmasfVS/cgkN0Oy84x5tHzDS0OihBjrcAfanRodtJj1bsJRp7VsjsEILkZfzscf1Aaq+XdJQK2M0EyTG9Nw33OxraGKR0Vn7hDyn+YH3v01wqefGZ9uVUPPYPKSGv5jQzoPd08dHgp5pwzDXF4aAI8YUW8zjgrdmKNgPDS+x3T0awpjD2KvqQzh/j6mYZv+I1CbFlIf0n0+7rbZDgov3PYB1HXzLNldbeahplEKK/HmT+5v5ytc/HWGU0mEN08R5pKn0mXckl60YKAjtPGSmGwLeynGu6ZY3X54z44V6O4L5xwSNjFXkHJR7jBHglyTl5FBmsXQ=
+      - export AWS_ACCESS_KEY_ID=ASIA3FCP4CIDFCEHQ3XE
+      - export AWS_SECRET_ACCESS_KEY=aRlU1AH1eYZmOygz4onZbhBW+ZOlH55MybckR+MR
+      - export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEMr//////////wEaCXVzLWVhc3QtMSJIMEYCIQDbqWOI7rkkZZrsLM2Xg3nVpUNG64B7E8mzr+04dAbmowIhAPZcqLqBGFJJsnXIJJE2yyMV74GG8pkdtiSXRF8JYXnzKsADCLP//////////wEQAxoMNzY2ODE5MTc2OTY2IgwTBflZKapmh20u+60qlAOvs7GVSMq9XeeFomtj6G2Vrufa6ALW6fdbHxEFREIt3C4nsRV3N6t1dO0dlnwl/UrOM4F8yK/9wWmr3KOCKW6IiRYiIWKz950yqjg/BEoDtcmdVjWh1DJAkwqth97LIDksCEGizK8J8/XGRKnySSnKrAchdQ0lLy3uPQgB2rolzlHcX5WYZwpOshPQs/9/Wonh1R7dQcgx0EXyOlTErKWYlnH1ARXIZ5DG1ErcLTfpq5jI4orQLBKWKigokMS8BYRGc0N1k7xHlzoFi8nMxsMU/6wfcYbXZJCtrHxhaKUMwZIfq7/yAffxbAuEIuHnume7zQdTmOpOotHRrJROm1ehmpQIfH5h3+IminWge2Djmle8KwCgcK1PGnq4qF/EhETsuIhRVqjciUGjwKvLl79tALBC4b8t1xdeKf+9FobdvuNuk1zsiySpmLmiPEixNY6ETNXoa8E8y8ll6QxhZJg6X/6WqtOtxAQl87HF85ilDxkJFUpofgqwZ5SqDaETu8ANhIxEnXZCUvd0q/qyAixHaIZ25DDPnNihBjrcAUXGbGojvffuF1PRaqcKGuxjQzDHQngx9TcxgkguLo3c2pjRtiBIIzIjNOBSH76r/pH3gk9rT20Zi1UD5TszuUuABZz2kERdkd+dRJPNw8VoH2Pnp0CvRQb9p2MWYWoyh/8WItK42yDtIhYKMHiuBu/5jPecfyFIUFdnTPlg5OzZegqmqEelKrFur8/FNPMhTMzoiw4Kfa2yg9YlSnnzhf4Gx2vLbv8IXLLjArXZndiyTM3jnK5vsDU+KdmOQ9xfR0VLnkYvNEj4UMug5JdiradDJVEwpCyWfrvNnqU=
       - |
         aws eks update-kubeconfig            \
           --name $AMX_PPL_CLUSTER_EKS        \
@@ -200,15 +201,15 @@ phases:
             --override-existing-serviceaccounts
         fi
       ### CloudWatch Log configuration
-      - sed -i.bk 's/LOGGROUPNAME_PLACEHOLDER/'$LOGGROUPNAME'/g' manifests/aws-logging-cloudwatch-configmap.yaml
-      - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/'$LOGGROUPPREFIX'/g' manifests/aws-logging-cloudwatch-configmap.yaml
+      - sed -i.bk 's/LOGGROUPNAME_PLACEHOLDER/$LOGGROUPNAME/g' manifests/aws-logging-cloudwatch-configmap.yaml
+      - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/$LOGGROUPPREFIX/g' manifests/aws-logging-cloudwatch-configmap.yaml
       ### Installation HPA
       - |
         if [ ! $(kubectl get serviceaccounts -n kube-system metrics-server | grep -v "^NAME" | wc -l) = 0 ]
         then
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
         fi
-      - sed -i.bk 's/DEPLOYMENTNAME_PLACEHOLDER/'$DEPLOYMENTNAME'/g' manifests/hpa-cpu.yaml
+      - sed -i.bk 's/DEPLOYMENTNAME_PLACEHOLDER/$DEPLOYMENTNAME/g' manifests/hpa-cpu.yaml
   post_build:
     commands:
       - kubectl get pods -A -o wide
