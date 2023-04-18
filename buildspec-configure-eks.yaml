@@ -143,7 +143,6 @@ phases:
           aws iam create-policy \
             --policy-name eks-fargate-logging-policy \
             --policy-document file://permissions.json
-
           aws iam attach-role-policy \
             --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy \
             --role-name AMX-PPL-CC-$AMX_PPL_ENV-FG-PPL-ROLE
@@ -203,6 +202,7 @@ phases:
       ### CloudWatch Log configuration
       - sed -i.bk 's/LOGGROUPNAME_PLACEHOLDER/$LOGGROUPNAME/g' manifests/aws-logging-cloudwatch-configmap.yaml
       - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/$LOGGROUPPREFIX/g' manifests/aws-logging-cloudwatch-configmap.yaml
+      - kubectl apply -f manifests/aws-logging-cloudwatch-configmap.yaml
       ### Installation HPA
       - |
         if [ ! $(kubectl get serviceaccounts -n kube-system metrics-server | grep -v "^NAME" | wc -l) = 0 ]
@@ -210,6 +210,7 @@ phases:
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
         fi
       - sed -i.bk 's/DEPLOYMENTNAME_PLACEHOLDER/$DEPLOYMENTNAME/g' manifests/hpa-cpu.yaml
+      - kubectl apply -f manifests/hpa-cpu.yaml
   post_build:
     commands:
       - kubectl get pods -A -o wide
