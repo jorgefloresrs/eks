@@ -211,6 +211,7 @@ phases:
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
         fi
       - sed -i.bk 's/DEPLOYMENTNAME_PLACEHOLDER/$DEPLOYMENTNAME/g' manifests/hpa-cpu.yaml
+      - sed -i.bk 's/NAMESPACE_PLACEHOLDER/$AMX_PPL_NAMESPACE/g' manifests/hpa-cpu.yaml
       - kubectl apply -f manifests/hpa-cpu.yaml
   post_build:
     commands:
