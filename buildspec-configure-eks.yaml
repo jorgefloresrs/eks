@@ -36,9 +36,9 @@ phases:
     commands:
       - export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)
       - EKS_KUBECTL_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/AMX-PPL-CB-EKS-KUBECTL-766819176966-us-east-1"
-      - export AWS_ACCESS_KEY_ID=ASIA3FCP4CIDFKEC4CZC
-      - export AWS_SECRET_ACCESS_KEY=Ce0K2EIrLntn3vtn1KcwMCdyoGh2HgpQYHDuA4hP
-      - export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEBUaCXVzLWVhc3QtMSJHMEUCIQDLEmEY/thn3RuCx9mwZmqb+RPi294othYjqqhlLv9+xQIgYH6ic0LRXEyuO3HMtqOXLP3gjWpr4ZDqvM50tZ90LYAqwAMI/v//////////ARADGgw3NjY4MTkxNzY5NjYiDLbhEwL8t40bBrL4niqUAw7doSDFHBH5HZ/+9xKN15TnzPac6T16dq82EtwNnEbBdDFi9568lBxECIzNERyMpQv0mEJmRJF5TI8yu9EhQtqDMPKuKt7+61gkEoBDwlk/GQsosl4/zqIJ6MGECinMH1BdG5kJG5qfA64M9aOOebcmfgFb8nhmaflgYMkLtpaxr+CNc6YwKmNXKwAnYxeRQQ0GMFNsvE+C8qH/FN56HVldAx4vG3TXNZyZfAbl5cz7iqa3o+sJBxkKxZYpTVGem8FBvVqbPHL7S/0LvBH7dSzXp+EwCEnCmWeOTe+46+EroWx/TY977JaOOm3zAmOiVL9D8nM6ENXTagCGU/iUMzQjojLnskpUhKjJwyKVQesn5EbA09ec68tgQ934OJlzo4XgjtX683ZeSH8l6YCOx8I1c9tDMQl4OpXayzEDji1FkuxzqQKEj7wYfgVVtNvffo43u74JI+YXIH4Q3NZkeDSfhKg46T0ykdJNsyqY9ZaSFeIrZW6ba77oQqo21qenl9c2D5RpM0+C5/tc/Ww8fE6yaOgUMLvT6KEGOt0B45wPb/QZIeY8/r+ByJuwpCh/G83e8fuPHTuxjd/3emwLOuV9neeYLCfjmRwU0m9gOloFLm7isppQv4tkgCRE05ja4dZGJ11ibuhEt/XJSN7KDRsVsePNyl4vsaGcO72wAFihT2tKmFIzDzCqs8WI6PWQumTwARpe6KLFM9eTT1afXnQV3hTCHRKHZ5h1/QnCp6JXC4HdtMksBV/CQiy7lQ0hz8vIWmJaDXOfTjjnmo+fHDUPQVlaUDrryjn52fdOT1xWYZQq+mFMtL1XmXJHVLtW/SZrfjl69ZYeBBE=
+      - export AWS_ACCESS_KEY_ID=ASIA3FCP4CIDETZFY5G3
+      - export AWS_SECRET_ACCESS_KEY=8jf+5X5pxVuKAEBg3kzNFHeBzVEzvofnGdb3ZxSA
+      - export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEFsaCXVzLWVhc3QtMSJHMEUCIECTzIx1p3pIgEVagL7TkLuxD4vcHTQ08RTEaG7ezSGCAiEAnPfce+aY7iCzq/eQcSZPIvWGTCaK26XoFjJkMFlsxLkqtwMIVBADGgw3NjY4MTkxNzY5NjYiDDXL9dHmFM/fD5xcCSqUA2RjiJQSllxJaGeAm1kA6I8zzYe7CC2tXu9E9CF6i1gPnrYwxwjy+WSZDfDMPCLH9S/FvMtp0QLrGurqOVFHpobJvjYHWWq/ve8qLiUaE4P5JjREjsmufcoIl5ophpuSQ2UZdIGZxc5OOQSK1Byi1nOzZ9jsMKcuf0XbVIkWe7bKQkMu4exT9gXd+k14agmXyV1lifibrFN0UiHU4dzicJVvJlfGIFQJpuicRNfGr6RU0BW6OT4GC1dYipyAW2DhaYF/drfkRVoEsp8KwuM04GE44CL2Mo08VAZvA61Ti0aSoMpgtMnqKqkDxvYELZalLqZUXA2Sm9ED6sLEKit1AzFc7ZhfIoFbLy/U4BmU+vJvZ8U07IGMCOiPnqJTapqkrrTz9EpmG0iV0s5l/2UyRSR4LALebYotfCyabqfOR1Mp/rm8g5wygEncQ6NUPNx8KHrQLXsl4YVTQ1AzRVOk09IqgGnTVnKDFvYyhFoID0O09A/iLHJpcRU1m28MDykOSfu+GWnrKszLa0LAj0BV0rzjKOwzMK2O+KEGOt0BQtJ/L2FvSL7A0J2zm5J2iTVuJDc5gUvlL4MY60GCKEJt8bWPNnnZ7LXq9IoUxstU4PhAbm08TiIEWnku5RmHjlOjwrvHRR+bZBxa+dVIPIKwkuRWb/4ev8Of6EDtrQmq1PMAHObmhTCRcRV7eri3lqxwADLRgd88K5rrLyPWuIHPh2PoofNd1NC+jQZiZCHpSOzZdg6FLYE0Zh6LTLPXQdV0IGBPMUQ+dVVc9JXXDaWSjn9TjszHkWhMqcEC56wZvrkWNKsGyRP50iSF8k06BeetvX79uInt/NvcErw=
       - |
         aws eks update-kubeconfig            \
           --name $AMX_PPL_CLUSTER_EKS        \
@@ -47,7 +47,7 @@ phases:
         ROLE="    - groups:\n        - system:masters\n      rolearn: ${EKS_KUBECTL_ROLE_ARN}\n      username: codebuild-kubectl"
         kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"${ROLE}\";next}1" > /tmp/aws-auth-patch.yml
         kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
-      - oidc_provider=$(aws eks describe-cluster --name $AMX_PPL_CLUSTER_EKS--region $AMX_PPL_REGION --query "cluster.identity.oidc.issuer" --output text | sed -e "s/^https:\/\///")
+      - oidc_provider=$(aws eks describe-cluster --name $AMX_PPL_CLUSTER_EKS --region $AMX_PPL_REGION --query "cluster.identity.oidc.issuer" --output text | sed -e "s/^https:\/\///")
       - |
         if [ ! ${oidc_provider} ]
         then
