@@ -203,9 +203,9 @@ phases:
       - sed -i.bk 's/LOGGROUPNAME_PLACEHOLDER/$LOGGROUPNAME/g' manifests/aws-logging-cloudwatch-configmap.yaml
       - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/$LOGGROUPPREFIX/g' manifests/aws-logging-cloudwatch-configmap.yaml
       - |
-        if [ ! $(kubectl get namespace $AMX_PPL_NAMESPACE | grep -v "^NAME" | wc -l) = 0 ]
+        if [ ! $(kubectl get namespace aws-observability | grep -v "^NAME" | wc -l) = 0 ]
         then
-          kubectl create namespace $AMX_PPL_NAMESPACE
+          kubectl create namespace aws-observability
         fi
       - kubectl apply -f manifests/aws-logging-cloudwatch-configmap.yaml
       - kubectl apply -f manifests/aws-logging-cloudwatch-configmap.yaml
@@ -217,6 +217,11 @@ phases:
         fi
       - sed -i.bk 's/DEPLOYMENTNAME_PLACEHOLDER/$DEPLOYMENTNAME/g' manifests/hpa-cpu.yaml
       - sed -i.bk 's/NAMESPACE_PLACEHOLDER/$AMX_PPL_NAMESPACE/g' manifests/hpa-cpu.yaml
+      - |
+        if [ ! $(kubectl get namespace $AMX_PPL_NAMESPACE | grep -v "^NAME" | wc -l) = 0 ]
+        then
+          kubectl create namespace $AMX_PPL_NAMESPACE
+        fi
       - kubectl apply -f manifests/hpa-cpu.yaml
   post_build:
     commands:
