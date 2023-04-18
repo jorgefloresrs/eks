@@ -186,6 +186,11 @@ phases:
             --approve
         fi
       - |
+        if [ ! $(kubectl get namespace $AMX_PPL_NAMESPACE | grep -v "^NAME" | wc -l) = 0 ]
+        then
+          kubectl create namespace $AMX_PPL_NAMESPACE
+        fi
+      - |
         if [ ! $(kubectl get serviceaccounts -n $AMX_PPL_NAMESPACE $AMX_PPL_NAMESPACE | grep -v "^NAME" | wc -l) = 0 ]
         then 
           eksctl create iamserviceaccount \
@@ -217,11 +222,6 @@ phases:
         fi
       - sed -i.bk 's/DEPLOYMENTNAME_PLACEHOLDER/$DEPLOYMENTNAME/g' manifests/hpa-cpu.yaml
       - sed -i.bk 's/NAMESPACE_PLACEHOLDER/$AMX_PPL_NAMESPACE/g' manifests/hpa-cpu.yaml
-      - |
-        if [ ! $(kubectl get namespace $AMX_PPL_NAMESPACE | grep -v "^NAME" | wc -l) = 0 ]
-        then
-          kubectl create namespace $AMX_PPL_NAMESPACE
-        fi
       - kubectl apply -f manifests/hpa-cpu.yaml
   post_build:
     commands:
