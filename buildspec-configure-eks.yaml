@@ -202,6 +202,7 @@ phases:
       ### CloudWatch Log configuration
       - sed -i.bk 's/LOGGROUPNAME_PLACEHOLDER/$LOGGROUPNAME/g' manifests/aws-logging-cloudwatch-configmap.yaml
       - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/$LOGGROUPPREFIX/g' manifests/aws-logging-cloudwatch-configmap.yaml
+      - kubectl create namespace aws-observability
       - kubectl apply -f manifests/aws-logging-cloudwatch-configmap.yaml
       ### Installation HPA
       - |
