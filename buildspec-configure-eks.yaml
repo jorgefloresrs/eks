@@ -68,7 +68,7 @@ phases:
       - helm repo update
       - kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
       - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
-      - AWSLoadBalancerControllerPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy 2> /dev/null | grep POLICY)
+      - AWSLoadBalancerControllerPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy --output text 2> /dev/null | grep POLICY)
       - |
         if [ -z "${AWSLoadBalancerControllerPolicy}" ]
         then
@@ -140,7 +140,7 @@ phases:
           rm -rf fluent-bit-config.yaml
         fi
       - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
-      - EksFargateLoggingPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy 2> /dev/null | grep "^POLICY")
+      - EksFargateLoggingPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy --output text 2> /dev/null | grep "^POLICY")
       - |
         if [ -z "${EksFargateLoggingPolicy}" ]
         then
