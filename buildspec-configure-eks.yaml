@@ -68,14 +68,16 @@ phases:
       - helm repo update
       - kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
       - curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.5/docs/install/iam_policy.json
+      - AWSLoadBalancerControllerPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy 2> /dev/null | grep POLICY)
       - |
-        if [ $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy 2> /dev/null | grep POLICY) = ""  ]
+        if [ -z "${AWSLoadBalancerControllerPolicy}" ]
         then
           aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
         fi
       - rm -f iam_policy.json
+      - AWSLoadBalancerControllerSA=$(kubectl get serviceaccounts -n kube-system aws-load-balancer-controller 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get serviceaccounts -n kube-system aws-load-balancer-controller 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${AWSLoadBalancerControllerSA}" ]
         then
           eksctl create iamserviceaccount \
             --cluster $AMX_PPL_CLUSTER_EKS \
@@ -85,8 +87,9 @@ phases:
             --override-existing-serviceaccounts \
             --region $AMX_PPL_REGION --approve
         fi
+      - AWSLoadBalancerControllerDeployment=$(kubectl get deployment -n kube-system aws-load-balancer-controller 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get deployment -n kube-system aws-load-balancer-controller 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "{AWSLoadBalancerControllerDeployment}" ]
         then
           helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
             --set clusterName=$AMX_PPL_CLUSTER_EKS \
@@ -116,8 +119,9 @@ phases:
           FluentBitHttpServer='On'
         fi
       - kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cloudwatch-namespace.yaml
+      - AWSCloudwatchConfigMap=$(kubectl get configmap/fluent-bit-cluster-info -n amazon-cloudwatch 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get configmap/fluent-bit-cluster-info -n amazon-cloudwatch 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${AWSCloudwatchConfigMap}" ]
         then
           kubectl create configmap fluent-bit-cluster-info \
             --from-literal=cluster.name=${ClusterName} \
@@ -127,16 +131,18 @@ phases:
             --from-literal=read.tail=${FluentBitReadFromTail} \
             --from-literal=logs.region=${RegionName} -n amazon-cloudwatch
         fi
+      - AWSCloudwatchSA=$(kubectl get serviceaccounts -n amazon-cloudwatch fluent-bit 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get serviceaccounts -n amazon-cloudwatch fluent-bit 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${AWSCloudwatchSA}" ]
         then 
           curl -o fluent-bit-config.yaml https://github.com/madebybk/eksapp/blob/main/fluent-bit/fluent-bit-config.yaml
           kubectl apply -f fluent-bit-config.yaml
           rm -rf fluent-bit-config.yaml
         fi
       - curl -o permissions.json https://raw.githubusercontent.com/aws-samples/amazon-eks-fluent-logging-examples/mainline/examples/fargate/cloudwatchlogs/permissions.json
+      - EksFargateLoggingPolicy=$(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy 2> /dev/null | grep "^POLICY")
       - |
-        if [ $(aws iam get-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-fargate-logging-policy 2> /dev/null | grep "^POLICY") = "" ]
+        if [ -z "${EksFargateLoggingPolicy}" ]
         then
           aws iam create-policy \
             --policy-name eks-fargate-logging-policy \
@@ -152,8 +158,9 @@ phases:
                                     s/{{http_server_port}}/"'${FluentBitHttpPort}'"/
                                     s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/
                                     s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -
+      - EksFargateProfile=$(aws eks list-fargate-profiles --cluster-name $AMX_PPL_CLUSTER_EKS --output text --output text --region $AMX_PPL_REGION | grep fargate-container-insights)
       - |
-        if [ $(aws eks list-fargate-profiles --cluster-name $AMX_PPL_CLUSTER_EKS --output text --output text --region $AMX_PPL_REGION | grep fargate-container-insights) = "" ]
+        if [ -z "${EksFargateProfile}" ]
         then
           eksctl create fargateprofile             \
             --cluster ${ClusterName}               \
@@ -162,8 +169,9 @@ phases:
             --region $AMX_PPL_REGION
         fi  
       ### Install Otel
+      - EksAddonOtel=$(aws eks list-addons --cluster-name $AMX_PPL_CLUSTER_EKS --output text --output text --region $AMX_PPL_REGION | grep otel)
       - |
-        if [ $(aws eks list-addons --cluster-name $AMX_PPL_CLUSTER_EKS --output text --output text --region $AMX_PPL_REGION | grep otel) = "" ]
+        if [ -z "${EksAddonOtel}" ]
         then
           kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
           aws eks create-addon \
@@ -171,8 +179,9 @@ phases:
             --addon-version v0.45.0-eksbuild.1 \
             --cluster-name $AMX_PPL_CLUSTER_EKS
         fi
+      - FargateContainerInsightSA=$(kubectl get serviceaccounts -n fargate-container-insights adot-collector 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get serviceaccounts -n fargate-container-insights adot-collector 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${FargateContainerInsightSA}" ]
         then
           eksctl create iamserviceaccount \
             --cluster $AMX_PPL_CLUSTER_EKS \
@@ -183,8 +192,9 @@ phases:
             --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy \
             --approve
         fi
+      - NamespaceAppSA=$(kubectl get serviceaccounts -n $AMX_PPL_NAMESPACE $AMX_PPL_NAMESPACE 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get serviceaccounts -n $AMX_PPL_NAMESPACE $AMX_PPL_NAMESPACE 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${NamespaceAppSA}" ]
         then 
           eksctl create iamserviceaccount \
             --name $AMX_PPL_NAMESPACE \
@@ -200,15 +210,17 @@ phases:
       ### CloudWatch Log configuration
       - sed -i.bk 's/LOGGROUPNAME_PLACEHOLDER/$LOGGROUPNAME/g' manifests/aws-logging-cloudwatch-configmap.yaml
       - sed -i.bk 's/LOGGROUPPREFIX_PLACEHOLDER/$LOGGROUPPREFIX/g' manifests/aws-logging-cloudwatch-configmap.yaml
+      - NamespaceApp=$(kubectl get namespace $AMX_PPL_NAMESPACE 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get namespace $AMX_PPL_NAMESPACE 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${NamespaceApp}" ]
         then
           kubectl create namespace $AMX_PPL_NAMESPACE
         fi
       - kubectl apply -f manifests/aws-logging-cloudwatch-configmap.yaml
       ### Installation HPA
+      - MetricsServerSA=$(kubectl get serviceaccounts -n kube-system metrics-server 2> /dev/null | grep -v "^NAME")
       - |
-        if [ $(kubectl get serviceaccounts -n kube-system metrics-server 2> /dev/null | grep -v "^NAME") = "" ]
+        if [ -z "${MetricsServerSA}" ]
         then
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
         fi
